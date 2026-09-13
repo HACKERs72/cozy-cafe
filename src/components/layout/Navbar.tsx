@@ -47,8 +47,12 @@ export function Navbar() {
 
   return (
     <header 
-      className={`sticky top-0 z-50 w-full border-b border-black/5 bg-[var(--background)]/90 backdrop-blur-md transition-transform duration-300 ease-in-out ${
+      className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ease-in-out ${
         isVisible ? "translate-y-0" : "-translate-y-full"
+      } ${
+        isMobileMenuOpen 
+          ? "bg-[var(--background)] border-[--color-muted-brown]/10" 
+          : "bg-[var(--background)]/90 backdrop-blur-md border-[--color-muted-brown]/10"
       }`}
     >
       <div className="container-main flex h-20 items-center justify-between">
@@ -76,41 +80,65 @@ export function Navbar() {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden p-2 text-[--color-espresso] focus:outline-none"
+          className="md:hidden p-2 text-[--color-espresso] focus:outline-none relative w-10 h-10 flex items-center justify-center"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle menu"
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMobileMenuOpen}
         >
-          {isMobileMenuOpen ? (
-             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-          )}
+          <div className="flex flex-col justify-center items-center w-6 h-5 relative">
+            <span 
+              className={`block absolute h-[2px] w-full bg-current rounded transition-all duration-300 ease-out motion-reduce:transition-none ${
+                isMobileMenuOpen ? "rotate-45 top-2" : "top-0"
+              }`} 
+            />
+            <span 
+              className={`block absolute h-[2px] w-full bg-current rounded transition-all duration-300 ease-out motion-reduce:transition-none top-2 ${
+                isMobileMenuOpen ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"
+              }`} 
+            />
+            <span 
+              className={`block absolute h-[2px] w-full bg-current rounded transition-all duration-300 ease-out motion-reduce:transition-none ${
+                isMobileMenuOpen ? "-rotate-45 top-2" : "top-4"
+              }`} 
+            />
+          </div>
         </button>
       </div>
 
       {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-20 left-0 w-full bg-[--color-secondary] border-b border-black/5 shadow-lg shadow-black/5 animate-in slide-in-from-top-2 fade-in duration-200">
-          <nav className="container-main py-6 flex flex-col space-y-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-lg font-medium text-[--color-espresso] hover:text-[--color-primary] transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="pt-4 border-t border-black/5">
-               <Link href="/menu" className={buttonVariants({ variant: "primary", className: "w-full" })} onClick={() => setIsMobileMenuOpen(false)}>
-                 View Menu
-               </Link>
-            </div>
-          </nav>
-        </div>
-      )}
+      <div 
+        className={`md:hidden absolute top-20 left-0 w-full bg-[var(--background)] border-b border-[--color-muted-brown]/10 shadow-xl shadow-black/5 transition-all duration-300 ease-out origin-top motion-reduce:transition-none ${
+          isMobileMenuOpen 
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 -translate-y-4 pointer-events-none"
+        }`}
+      >
+        <nav className="container-main py-6 flex flex-col space-y-2">
+          {navLinks.map((link, index) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`block py-3 text-lg font-medium text-[--color-espresso] hover:text-[--color-accent] hover:pl-2 transition-all duration-300 ease-out motion-reduce:transition-none ${
+                isMobileMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+              }`}
+              style={{ transitionDelay: isMobileMenuOpen ? `${index * 40}ms` : '0ms' }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {link.name}
+            </Link>
+          ))}
+          <div 
+            className={`pt-6 mt-4 border-t border-[--color-muted-brown]/10 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+            style={{ transitionDelay: isMobileMenuOpen ? `${navLinks.length * 40}ms` : '0ms' }}
+          >
+             <Link href="/menu" className={buttonVariants({ variant: "primary", className: "w-full" })} onClick={() => setIsMobileMenuOpen(false)}>
+               View Menu
+             </Link>
+          </div>
+        </nav>
+      </div>
     </header>
   );
 }
